@@ -202,7 +202,7 @@ MAX_UPLOAD_SIZE_BYTES=26214400
 
 ## Примечание по PyTorch CPU wheel
 
-Установка `torch` в Docker может быть тяжёлой. Для CPU-инференса можно заменить установку PyTorch на официальный CPU wheel, например адаптировать Dockerfile так:
+Установка `torch` в Docker может быть тяжёлой. Для CPU лучше заменить установку PyTorch на официальный CPU wheel так:
 
 ```dockerfile
 RUN pip install --upgrade pip \
@@ -210,52 +210,4 @@ RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 ```
 
-В таком случае из `requirements.txt` лучше убрать `torch` и `torchvision`, чтобы они не переустанавливались из обычного PyPI.
-
-## Как заменить teacher-модель на student-модель
-
-FastAPI и Redis-логика не зависят от конкретной нейросети. Модельный слой находится в `app/model_runner.py`.
-
-Есть базовый интерфейс:
-
-```python
-class SegmentationModel:
-    def predict(self, image_path: str) -> np.ndarray:
-        ...
-```
-
-Текущая реализация:
-
-```python
-class SegFormerCityscapesModel(SegmentationModel):
-    ...
-```
-
-Чтобы подключить свою student-модель:
-
-1. Создайте новый класс, например `StudentRoadSegmentationModel(SegmentationModel)`.
-2. Реализуйте метод `predict(self, image_path: str) -> np.ndarray`, который возвращает бинарную маску дороги `uint8` размера исходного изображения.
-3. Измените функцию `load_model()` так, чтобы она создавала ваш класс вместо `SegFormerCityscapesModel`.
-4. Остальной код `main.py`, `worker.py`, Redis-очередь и API менять не нужно.
-
-Пример:
-
-```python
-class StudentRoadSegmentationModel(SegmentationModel):
-    def __init__(self, weights_path: str):
-        self.model = load_my_student_model(weights_path)
-
-    def predict(self, image_path: str) -> np.ndarray:
-        image = Image.open(image_path).convert("RGB")
-        mask = run_student_inference(self.model, image)
-        return mask.astype(np.uint8)
-
-
-def load_model() -> SegmentationModel:
-    global _MODEL
-    if _MODEL is None:
-        _MODEL = StudentRoadSegmentationModel("/app/models/student.pt")
-    return _MODEL
-```
-
-Главное условие: `predict()` должен возвращать бинарную маску дороги, где пиксели дороги имеют значение `255`, а остальные — `0`.
+В таком случае из `requirements.txt` необходимо убрать `torch` и `torchvision`, чтобы они не переустанавливались из обычного PyPI.
