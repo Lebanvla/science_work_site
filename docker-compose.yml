@@ -1,0 +1,38 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  api:
+    image: road-segmentation-app:latest
+    build:
+      context: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    volumes:
+      - ./storage:/app/app/storage
+      - ./hf_cache:/app/.cache/huggingface
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      MODEL_NAME: nvidia/segformer-b0-finetuned-cityscapes-768-768
+
+  worker:
+    image: road-segmentation-app:latest
+    command: python -m app.worker
+    restart: unless-stopped
+    depends_on:
+      - redis
+    volumes:
+      - ./storage:/app/app/storage
+      - ./hf_cache:/app/.cache/huggingface
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      MODEL_NAME: nvidia/segformer-b0-finetuned-cityscapes-768-768

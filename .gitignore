@@ -1,0 +1,110 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables
+
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+logs/
+
+# Docker / build artifacts
+
+docker-compose.override.yml
+*.pid
+
+# Hugging Face / model cache
+
+hf_cache/
+.cache/
+app/.cache/
+
+# Runtime uploaded images and generated masks
+
+storage/input/*
+storage/output/*
+app/storage/input/*
+app/storage/output/*
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables
+
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+logs/
+
+# Docker / build artifacts
+
+docker-compose.override.yml
+*.pid
+
+# Hugging Face / model cache
+
+hf_cache/
+.cache/
+app/.cache/
+
+# Runtime uploaded images and generated masks
+
+storage/input/*
+storage/output/*
+app/storage/input/*
+app/storage/output/*
+app/static/output/*
+
